@@ -13,6 +13,7 @@ import {
   type Project,
   type ProjectScreenshot,
 } from "./data/portfolio";
+import { assetUrl } from "./lib/assetUrl";
 import "./App.css";
 
 function ProjectScreenshots({ images }: { images: ProjectScreenshot[] }) {
@@ -31,7 +32,7 @@ function ProjectScreenshots({ images }: { images: ProjectScreenshot[] }) {
       >
         {images.map((shot) => (
           <figure key={shot.src} className="project-screenshot-figure">
-            <img src={shot.src} alt={shot.alt} loading="lazy" />
+            <img src={assetUrl(shot.src)} alt={shot.alt} loading="lazy" />
             {shot.caption && <figcaption>{shot.caption}</figcaption>}
           </figure>
         ))}
@@ -43,7 +44,7 @@ function ProjectScreenshots({ images }: { images: ProjectScreenshot[] }) {
       >
         <div className="project-screenshots-carousel-viewport">
           <figure className="project-screenshot-figure">
-            <img key={active.src} src={active.src} alt={active.alt} />
+            <img key={active.src} src={assetUrl(active.src)} alt={active.alt} />
             {active.caption && <figcaption>{active.caption}</figcaption>}
           </figure>
         </div>
@@ -126,7 +127,7 @@ function ProjectModalCarousel({
   return (
     <div className="project-modal-carousel" aria-roledescription="carousel">
       <div className="project-modal-carousel-viewport">
-        <img key={active.src} src={active.src} alt={active.alt} />
+        <img key={active.src} src={assetUrl(active.src)} alt={active.alt} />
         {active.caption && (
           <p className="project-modal-carousel-caption">{active.caption}</p>
         )}
@@ -232,7 +233,7 @@ function ProjectDetailModal({
           />
         ) : (
           <div className="project-modal-fallback-media">
-            <img src={project.image} alt={project.title} />
+            <img src={assetUrl(project.image)} alt={project.title} />
           </div>
         )}
         <div className="project-modal-body">
@@ -277,7 +278,12 @@ function ProjectCardCarousel({
       aria-roledescription="carousel"
       aria-live="polite"
     >
-      <img key={active.src} src={active.src} alt={active.alt} loading="lazy" />
+      <img
+        key={active.src}
+        src={assetUrl(active.src)}
+        alt={active.alt}
+        loading="lazy"
+      />
       <div className="project-card-carousel-dots" aria-hidden>
         {images.map((shot, index) => (
           <span
@@ -368,7 +374,7 @@ function ArchitectureTabs({ layers }: { layers: ArchitectureLayer[] }) {
                 aria-hidden={!ribbonOpen}
               >
                 <img
-                  src={active.panelImage}
+                  src={assetUrl(active.panelImage!)}
                   alt={active.panelImageAlt ?? active.title}
                   loading="lazy"
                 />
@@ -694,7 +700,11 @@ function ContactUspSlider({ slides }: { slides: readonly ContactUspSlide[] }) {
             aria-hidden={index !== activeIndex}
           >
             <div className="contact-usp-slide-media">
-              <img src={slide.image} alt={slide.imageAlt} loading="lazy" />
+              <img
+                src={assetUrl(slide.image)}
+                alt={slide.imageAlt}
+                loading="lazy"
+              />
             </div>
             <div className="contact-usp-slide-copy sr-only">
               <h3>{slide.title}</h3>
@@ -985,7 +995,7 @@ export default function App() {
             <div className="hero-visual">
               <div className="hero-image-ring">
                 <img
-                  src="/profile.png"
+                  src={assetUrl("/profile.png")}
                   alt={PROFILE.name}
                   className="hero-image"
                   width={360}
@@ -1053,7 +1063,7 @@ export default function App() {
                   {featured.screenshots && featured.screenshots.length > 0 ? (
                     <ProjectScreenshots images={featured.screenshots} />
                   ) : (
-                    <img src={featured.image} alt={featured.title} />
+                    <img src={assetUrl(featured.image)} alt={featured.title} />
                   )}
                 </div>
                 <div className="project-featured-body">
@@ -1137,7 +1147,7 @@ export default function App() {
                       />
                     ) : (
                       <img
-                        src={project.image}
+                        src={assetUrl(project.image)}
                         alt={project.title}
                         loading="lazy"
                       />
