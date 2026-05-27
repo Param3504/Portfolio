@@ -742,6 +742,16 @@ const NAV = [
   { id: "contact", label: "Contact" },
 ];
 
+const NAV_SCROLL_OFFSET = 88;
+
+function scrollToSection(id: string) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const top =
+    el.getBoundingClientRect().top + window.scrollY - NAV_SCROLL_OFFSET;
+  window.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
+}
+
 const CONTACT_LINKS = [
   {
     id: "email",
@@ -828,7 +838,7 @@ export default function App() {
   >("all");
 
   useEffect(() => {
-    const headerOffset = 96;
+    const headerOffset = NAV_SCROLL_OFFSET;
 
     const updateFromScroll = () => {
       setScrolled(window.scrollY > 24);
@@ -911,7 +921,11 @@ export default function App() {
           <a
             href="#home"
             className="nav-logo"
-            onClick={() => setMobileMenuOpen(false)}
+            onClick={(e) => {
+              e.preventDefault();
+              setMobileMenuOpen(false);
+              scrollToSection("home");
+            }}
           >
             PP<span className="nav-dot">.</span>
           </a>
@@ -946,45 +960,50 @@ export default function App() {
             <span className="nav-menu-bar" aria-hidden />
           </button>
         </div>
-
-        <div
-          id="nav-mobile-panel"
-          className={cn("nav-mobile-panel", mobileMenuOpen && "nav-mobile-panel-open")}
-          aria-hidden={!mobileMenuOpen}
-        >
-          <button
-            type="button"
-            className="nav-mobile-backdrop"
-            aria-label="Close menu"
-            onClick={() => setMobileMenuOpen(false)}
-          />
-          <div className="nav-mobile-sheet">
-            <nav className="nav-mobile-links" aria-label="Mobile">
-              {NAV.map((item) => (
-                <a
-                  key={item.id}
-                  href={`#${item.id}`}
-                  className={cn(
-                    "nav-mobile-link",
-                    activeSection === item.id && "nav-link-active",
-                  )}
-                  aria-current={activeSection === item.id ? "page" : undefined}
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  {item.label}
-                </a>
-              ))}
-            </nav>
-            <a
-              href={`mailto:${PROFILE.email}`}
-              className="btn btn-primary nav-mobile-cta"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Get in touch
-            </a>
-          </div>
-        </div>
       </header>
+
+      <div
+        id="nav-mobile-panel"
+        className={cn("nav-mobile-panel", mobileMenuOpen && "nav-mobile-panel-open")}
+        aria-hidden={!mobileMenuOpen}
+      >
+        <button
+          type="button"
+          className="nav-mobile-backdrop"
+          aria-label="Close menu"
+          tabIndex={mobileMenuOpen ? 0 : -1}
+          onClick={() => setMobileMenuOpen(false)}
+        />
+        <div className="nav-mobile-sheet">
+          <nav className="nav-mobile-links" aria-label="Mobile">
+            {NAV.map((item) => (
+              <a
+                key={item.id}
+                href={`#${item.id}`}
+                className={cn(
+                  "nav-mobile-link",
+                  activeSection === item.id && "nav-link-active",
+                )}
+                aria-current={activeSection === item.id ? "page" : undefined}
+                onClick={(e) => {
+                  e.preventDefault();
+                  setMobileMenuOpen(false);
+                  requestAnimationFrame(() => scrollToSection(item.id));
+                }}
+              >
+                {item.label}
+              </a>
+            ))}
+          </nav>
+          <a
+            href={`mailto:${PROFILE.email}`}
+            className="btn btn-primary nav-mobile-cta"
+            onClick={() => setMobileMenuOpen(false)}
+          >
+            Get in touch
+          </a>
+        </div>
+      </div>
 
       <main>
         <section id="home" className="hero section">

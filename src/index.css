@@ -59,6 +59,7 @@ img {
 
 .section {
   padding: 5rem 0;
+  scroll-margin-top: 5.5rem;
 }
 
 .section-label {

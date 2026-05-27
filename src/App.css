@@ -133,14 +133,17 @@
 .nav-mobile-panel {
   position: fixed;
   inset: 0;
-  z-index: 99;
+  z-index: 110;
   pointer-events: none;
   visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
 }
 
 .nav-mobile-panel-open {
   pointer-events: auto;
   visibility: visible;
+  opacity: 1;
 }
 
 .nav-mobile-backdrop {
@@ -239,6 +242,7 @@
 
 .hero {
   padding-top: 7rem;
+  scroll-margin-top: 5.5rem;
   min-height: 92vh;
   display: flex;
   align-items: center;
