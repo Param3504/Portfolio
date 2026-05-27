@@ -820,6 +820,7 @@ function ContactLinkIcon({ icon }: { icon: string }) {
 
 export default function App() {
   const [scrolled, setScrolled] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState(NAV[0].id);
   const [modalProject, setModalProject] = useState<Project | null>(null);
   const [projectFilter, setProjectFilter] = useState<
@@ -862,6 +863,19 @@ export default function App() {
     };
   }, []);
 
+  useEffect(() => {
+    if (!mobileMenuOpen) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setMobileMenuOpen(false);
+    };
+    document.body.style.overflow = "hidden";
+    window.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.body.style.overflow = "";
+      window.removeEventListener("keydown", onKeyDown);
+    };
+  }, [mobileMenuOpen]);
+
   const featured = PROJECTS.find((p) => p.featured);
   const gridProjects = PROJECT_GRID_ORDER.map((id) =>
     PROJECTS.find((p) => p.id === id),
@@ -886,12 +900,22 @@ export default function App() {
   return (
     <>
       <div className="bg-mesh" aria-hidden />
-      <header className={`nav ${scrolled ? "nav-scrolled" : ""}`}>
+      <header
+        className={cn(
+          "nav",
+          scrolled && "nav-scrolled",
+          mobileMenuOpen && "nav-menu-open",
+        )}
+      >
         <div className="container nav-inner">
-          <a href="#home" className="nav-logo">
+          <a
+            href="#home"
+            className="nav-logo"
+            onClick={() => setMobileMenuOpen(false)}
+          >
             PP<span className="nav-dot">.</span>
           </a>
-          <nav className="nav-links">
+          <nav className="nav-links nav-links-desktop" aria-label="Main">
             {NAV.map((item) => (
               <a
                 key={item.id}
@@ -905,10 +929,60 @@ export default function App() {
           </nav>
           <a
             href={`mailto:${PROFILE.email}`}
-            className="btn btn-primary nav-cta"
+            className="btn btn-primary nav-cta nav-cta-desktop"
           >
             Get in touch
           </a>
+          <button
+            type="button"
+            className="nav-menu-toggle"
+            aria-expanded={mobileMenuOpen}
+            aria-controls="nav-mobile-panel"
+            aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
+            onClick={() => setMobileMenuOpen((open) => !open)}
+          >
+            <span className="nav-menu-bar" aria-hidden />
+            <span className="nav-menu-bar" aria-hidden />
+            <span className="nav-menu-bar" aria-hidden />
+          </button>
+        </div>
+
+        <div
+          id="nav-mobile-panel"
+          className={cn("nav-mobile-panel", mobileMenuOpen && "nav-mobile-panel-open")}
+          aria-hidden={!mobileMenuOpen}
+        >
+          <button
+            type="button"
+            className="nav-mobile-backdrop"
+            aria-label="Close menu"
+            onClick={() => setMobileMenuOpen(false)}
+          />
+          <div className="nav-mobile-sheet">
+            <nav className="nav-mobile-links" aria-label="Mobile">
+              {NAV.map((item) => (
+                <a
+                  key={item.id}
+                  href={`#${item.id}`}
+                  className={cn(
+                    "nav-mobile-link",
+                    activeSection === item.id && "nav-link-active",
+                  )}
+                  aria-current={activeSection === item.id ? "page" : undefined}
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  {item.label}
+                </a>
+              ))}
+            </nav>
+            <a
+              href={`mailto:${PROFILE.email}`}
+              className="btn btn-primary nav-mobile-cta"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              Get in touch
+            </a>
+          </div>
         </div>
       </header>
 
