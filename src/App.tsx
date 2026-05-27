@@ -734,13 +734,13 @@ function ContactUspSlider({ slides }: { slides: readonly ContactUspSlide[] }) {
 }
 
 const NAV = [
-  { id: "home", label: "Home" },
-  { id: "about", label: "About" },
-  { id: "experience", label: "Experience" },
-  { id: "projects", label: "Projects" },
-  { id: "skills", label: "Skills" },
-  { id: "contact", label: "Contact" },
-];
+  { id: "home", label: "Home", icon: "home" },
+  { id: "about", label: "About", icon: "about" },
+  { id: "experience", label: "Experience", icon: "experience" },
+  { id: "projects", label: "Projects", icon: "projects" },
+  { id: "skills", label: "Skills", icon: "skills" },
+  { id: "contact", label: "Contact", icon: "contact" },
+] as const;
 
 const NAV_SCROLL_OFFSET = 88;
 
@@ -750,6 +750,108 @@ function scrollToSection(id: string) {
   const top =
     el.getBoundingClientRect().top + window.scrollY - NAV_SCROLL_OFFSET;
   window.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
+}
+
+function NavDrawerIcon({ icon }: { icon: (typeof NAV)[number]["icon"] }) {
+  const props = { viewBox: "0 0 24 24", width: 20, height: 20, "aria-hidden": true as const };
+  switch (icon) {
+    case "home":
+      return (
+        <svg {...props}>
+          <path
+            fill="currentColor"
+            d="M12 3.2 4 9v11h5v-6h6v6h5V9l-8-5.8z"
+          />
+        </svg>
+      );
+    case "about":
+      return (
+        <svg {...props}>
+          <path
+            fill="currentColor"
+            d="M12 12a4 4 0 1 0-4-4 4 4 0 0 0 4 4zm0 2c-3.3 0-6 1.6-6 3.6V20h12v-2.4c0-2-2.7-3.6-6-3.6z"
+          />
+        </svg>
+      );
+    case "experience":
+      return (
+        <svg {...props}>
+          <path
+            fill="currentColor"
+            d="M4 7h16v2H4V7zm2 4h12v9H6v-9zm2 2v5h8v-5H8zm-2-8h12v2H6V5z"
+          />
+        </svg>
+      );
+    case "projects":
+      return (
+        <svg {...props}>
+          <path
+            fill="currentColor"
+            d="M4 6h6v6H4V6zm0 8h6v6H4v-6zm8-8h8v6h-8V6zm0 8h8v6h-8v-6z"
+          />
+        </svg>
+      );
+    case "skills":
+      return (
+        <svg {...props}>
+          <path
+            fill="currentColor"
+            d="M12 2 9 8l-6 .5 4.5 4-1.5 6.5L12 16l4 3 1.5-6.5L22 8.5 16 8 12 2z"
+          />
+        </svg>
+      );
+    default:
+      return (
+        <svg {...props}>
+          <path
+            fill="currentColor"
+            d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm0 4-8 5L4 8V6l8 5 8-5v2z"
+          />
+        </svg>
+      );
+  }
+}
+
+function ResumeDownloadIcon() {
+  return (
+    <svg className="btn-icon" viewBox="0 0 24 24" width={18} height={18} aria-hidden>
+      <path
+        fill="currentColor"
+        d="M12 3a1 1 0 0 1 1 1v7.6l2.3-2.3a1 1 0 1 1 1.4 1.4l-4 4a1 1 0 0 1-1.4 0l-4-4a1 1 0 1 1 1.4-1.4L11 11.6V4a1 1 0 0 1 1-1zm-7 14a1 1 0 0 1 1-1h12a1 1 0 1 1 0 2H6a1 1 0 0 1-1-1z"
+      />
+    </svg>
+  );
+}
+
+function ResumeDownloadLink({
+  className,
+  onClick,
+}: {
+  className?: string;
+  onClick?: () => void;
+}) {
+  return (
+    <a
+      href={assetUrl(`/${PROFILE.resume.file}`)}
+      download={PROFILE.resume.downloadName}
+      className={cn("btn btn-primary btn-with-icon nav-resume-btn", className)}
+      onClick={onClick}
+    >
+      <ResumeDownloadIcon />
+      Resume
+    </a>
+  );
+}
+
+function NavDrawerChevron() {
+  return (
+    <svg viewBox="0 0 24 24" width={18} height={18} aria-hidden>
+      <path
+        fill="currentColor"
+        d="M9.3 6.3a1 1 0 0 1 1.4 0l4.6 4.6a1 1 0 0 1 0 1.4l-4.6 4.6a1 1 0 0 1-1.4-1.4L13.4 12 9.3 7.7a1 1 0 0 1 0-1.4z"
+      />
+    </svg>
+  );
 }
 
 const CONTACT_LINKS = [
@@ -831,7 +933,9 @@ function ContactLinkIcon({ icon }: { icon: string }) {
 export default function App() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [activeSection, setActiveSection] = useState(NAV[0].id);
+  const [activeSection, setActiveSection] = useState<(typeof NAV)[number]["id"]>(
+    NAV[0].id,
+  );
   const [modalProject, setModalProject] = useState<Project | null>(null);
   const [projectFilter, setProjectFilter] = useState<
     "all" | "gen-ai" | "chatbot"
@@ -852,7 +956,7 @@ export default function App() {
         return;
       }
 
-      let current = NAV[0].id;
+      let current: (typeof NAV)[number]["id"] = NAV[0].id;
       for (const { id } of NAV) {
         const el = document.getElementById(id);
         if (!el) continue;
@@ -941,12 +1045,35 @@ export default function App() {
               </a>
             ))}
           </nav>
-          <a
-            href={`mailto:${PROFILE.email}`}
-            className="btn btn-primary nav-cta nav-cta-desktop"
-          >
-            Get in touch
-          </a>
+          <div className="nav-header-actions">
+            <a
+              href="#contact"
+              className="btn btn-outline btn-with-icon nav-contact-header"
+              onClick={(e) => {
+                e.preventDefault();
+                setMobileMenuOpen(false);
+                scrollToSection("contact");
+              }}
+            >
+              <svg
+                className="btn-icon"
+                viewBox="0 0 24 24"
+                width={16}
+                height={16}
+                aria-hidden
+              >
+                <path
+                  fill="currentColor"
+                  d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm0 4-8 5L4 8V6l8 5 8-5v2z"
+                />
+              </svg>
+              Contact me
+            </a>
+            <ResumeDownloadLink
+              className="nav-resume-header"
+              onClick={() => setMobileMenuOpen(false)}
+            />
+          </div>
           <button
             type="button"
             className="nav-menu-toggle"
@@ -975,33 +1102,154 @@ export default function App() {
           onClick={() => setMobileMenuOpen(false)}
         />
         <div className="nav-mobile-sheet">
-          <nav className="nav-mobile-links" aria-label="Mobile">
-            {NAV.map((item) => (
-              <a
-                key={item.id}
-                href={`#${item.id}`}
-                className={cn(
-                  "nav-mobile-link",
-                  activeSection === item.id && "nav-link-active",
-                )}
-                aria-current={activeSection === item.id ? "page" : undefined}
-                onClick={(e) => {
-                  e.preventDefault();
-                  setMobileMenuOpen(false);
-                  requestAnimationFrame(() => scrollToSection(item.id));
-                }}
-              >
-                {item.label}
-              </a>
-            ))}
+          <div className="nav-drawer-header">
+            <a
+              href="#home"
+              className="nav-logo nav-drawer-logo"
+              onClick={(e) => {
+                e.preventDefault();
+                setMobileMenuOpen(false);
+                scrollToSection("home");
+              }}
+            >
+              PP<span className="nav-dot">.</span>
+            </a>
+            <button
+              type="button"
+              className="nav-drawer-close"
+              aria-label="Close menu"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              <svg viewBox="0 0 24 24" width={18} height={18} aria-hidden>
+                <path
+                  fill="currentColor"
+                  d="M6.4 5.3a1 1 0 0 1 1.4 0L12 9.5l4.2-4.2a1 1 0 1 1 1.4 1.4L13.4 11l4.2 4.2a1 1 0 0 1-1.4 1.4L12 12.5l-4.2 4.2a1 1 0 0 1-1.4-1.4l4.2-4.2-4.2-4.2a1 1 0 0 1 0-1.4z"
+                />
+              </svg>
+            </button>
+          </div>
+          <div className="nav-drawer-divider" aria-hidden />
+
+          <nav className="nav-drawer-links" aria-label="Mobile">
+            {NAV.map((item) => {
+              const isActive = activeSection === item.id;
+              return (
+                <a
+                  key={item.id}
+                  href={`#${item.id}`}
+                  className={cn(
+                    "nav-drawer-link",
+                    isActive && "nav-drawer-link-active",
+                  )}
+                  aria-current={isActive ? "page" : undefined}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setMobileMenuOpen(false);
+                    requestAnimationFrame(() => scrollToSection(item.id));
+                  }}
+                >
+                  <span className="nav-drawer-link-glow" aria-hidden />
+                  <span className="nav-drawer-link-icon">
+                    <NavDrawerIcon icon={item.icon} />
+                  </span>
+                  <span className="nav-drawer-link-label">{item.label}</span>
+                  <span className="nav-drawer-link-chevron">
+                    <NavDrawerChevron />
+                  </span>
+                </a>
+              );
+            })}
           </nav>
-          <a
-            href={`mailto:${PROFILE.email}`}
-            className="btn btn-primary nav-mobile-cta"
-            onClick={() => setMobileMenuOpen(false)}
-          >
-            Get in touch
-          </a>
+
+          <div className="nav-drawer-cta">
+            <div className="nav-drawer-cta-badge" aria-hidden>
+              <svg viewBox="0 0 24 24" width={20} height={20}>
+                <path
+                  fill="currentColor"
+                  d="M20 2H4a2 2 0 0 0-2 2v18l4-4h14a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2zm-2 11H6.8l-2.2 2.2V4h15v9z"
+                />
+              </svg>
+            </div>
+            <p className="nav-drawer-cta-title">
+              Let&apos;s build something{" "}
+              <span className="nav-drawer-cta-accent">amazing</span> together.
+            </p>
+            <p className="nav-drawer-cta-text">
+              I&apos;m available for exciting opportunities and collaborations.
+            </p>
+            <button
+              type="button"
+              className="btn btn-primary nav-drawer-cta-btn"
+              onClick={() => {
+                setMobileMenuOpen(false);
+                requestAnimationFrame(() => scrollToSection("contact"));
+              }}
+            >
+              <svg viewBox="0 0 24 24" width={18} height={18} aria-hidden>
+                <path
+                  fill="currentColor"
+                  d="M2 21 22 12 2 3v7l12 2-12 2v7z"
+                />
+              </svg>
+              Contact Me
+            </button>
+          </div>
+
+          <div className="nav-drawer-social">
+            <p className="nav-drawer-social-label">
+              <span className="nav-drawer-social-line" aria-hidden />
+              Find me on
+            </p>
+            <div className="nav-drawer-social-row">
+              <a
+                href={PROFILE.github}
+                target="_blank"
+                rel="noreferrer"
+                className="nav-drawer-social-item"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <span className="nav-drawer-social-icon">
+                  <ContactLinkIcon icon="github" />
+                </span>
+                <span>GitHub</span>
+              </a>
+              <span className="nav-drawer-social-sep" aria-hidden />
+              <a
+                href={PROFILE.linkedin}
+                target="_blank"
+                rel="noreferrer"
+                className="nav-drawer-social-item"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <span className="nav-drawer-social-icon">
+                  <ContactLinkIcon icon="linkedin" />
+                </span>
+                <span>LinkedIn</span>
+              </a>
+              <span className="nav-drawer-social-sep" aria-hidden />
+              <a
+                href={assetUrl(`/${PROFILE.resume.file}`)}
+                download={PROFILE.resume.downloadName}
+                className="nav-drawer-social-item"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <span className="nav-drawer-social-icon">
+                  <svg className="contact-link-icon" viewBox="0 0 24 24" aria-hidden>
+                    <path
+                      fill="currentColor"
+                      d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm4 18H6V4h7v5h5v11z"
+                    />
+                  </svg>
+                </span>
+                <span>Resume</span>
+              </a>
+            </div>
+          </div>
+
+          <p className="nav-drawer-footer">
+            © {new Date().getFullYear()}{" "}
+            <span>{PROFILE.name}</span>. All rights reserved.
+          </p>
         </div>
       </div>
 
@@ -1078,6 +1326,7 @@ export default function App() {
                 >
                   GitHub
                 </a>
+                <ResumeDownloadLink className="hero-resume-btn" />
               </div>
               <div className="hero-meta">
                 <span>{PROFILE.location}</span>

@@ -83,6 +83,10 @@ export const PROFILE = {
   github: "https://github.com/Param3504",
   phone: "+91 6351285937",
   linkedin: "https://www.linkedin.com/in/param-prajapati-714424267/",
+  resume: {
+    file: "Param-Prajapati-Resume.pdf",
+    downloadName: "Param-Prajapati-Resume.pdf",
+  },
   location: "Bengaluru, India",
   education: {
     school: "IIIT Vadodara - ICD",
