@@ -32,6 +32,24 @@ npm run preview
 
 Output is in `dist/`.
 
+## Deploy to GitHub Pages
+
+Live URL (after deploy): **https://param3504.github.io/portfolio/**
+
+1. Create a public repo: [github.com/new](https://github.com/new) named **`portfolio`** (no README).
+2. In the repo: **Settings → Pages → Build and deployment → Source: GitHub Actions**.
+3. From this folder, push (one-time login if prompted):
+
+```bash
+cd Portfolio
+git remote add origin https://github.com/Param3504/portfolio.git   # skip if already set
+git push -u origin main
+```
+
+The workflow in `.github/workflows/deploy.yml` builds and publishes on every push to `main`.
+
+> `vite.config.ts` uses `base: "/portfolio/"` — keep the repo name as `portfolio`, or update `base` to match your repo name.
+
 ## Project order
 
 1. **Trade Promo Optimiser** (featured) — execDas / RGM dashboard
