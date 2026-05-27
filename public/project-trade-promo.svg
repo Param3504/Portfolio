@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="500" viewBox="0 0 800 500" fill="none">
+  <rect width="800" height="500" fill="#0b1220"/>
+  <rect x="40" y="40" width="720" height="320" rx="16" fill="#1e293b" stroke="#334155"/>
+  <rect x="60" y="70" width="180" height="24" rx="6" fill="#00b097" fill-opacity="0.4"/>
+  <rect x="60" y="110" width="320" height="12" rx="4" fill="#334155"/>
+  <rect x="60" y="134" width="280" height="12" rx="4" fill="#334155"/>
+  <rect x="60" y="180" width="680" height="140" rx="8" fill="#0f172a" stroke="#00b097" stroke-opacity="0.5"/>
+  <rect x="80" y="200" width="120" height="100" rx="4" fill="#FFB000" fill-opacity="0.3"/>
+  <rect x="220" y="200" width="120" height="100" rx="4" fill="#3774B1" fill-opacity="0.4"/>
+  <rect x="360" y="200" width="360" height="100" rx="4" fill="#00b097" fill-opacity="0.2"/>
+  <text x="400" y="470" text-anchor="middle" fill="#64748b" font-family="system-ui" font-size="16">Trade Promo Optimiser  replace with screenshot</text>
+</svg>
