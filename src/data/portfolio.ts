@@ -681,6 +681,54 @@ export const PROJECT_GRID_ORDER = [
   "smart-targets",
 ] as const;
 
+export function getProjectById(id: string): Project | undefined {
+  return PROJECTS.find((p) => p.id === id);
+}
+
+/** Card / list thumbnail — prefers real screenshots over placeholder SVGs. */
+export function getProjectThumbnail(project: Project): string {
+  const shots = project.cardScreenshots ?? project.screenshots;
+  if (shots?.length) {
+    const idx = project.screenshotsInitialIndex ?? 0;
+    return shots[idx]?.src ?? shots[0].src;
+  }
+  return project.image;
+}
+
+/** Order for prev/next on project detail pages */
+export function getProjectRouteOrder(): string[] {
+  const seen = new Set<string>();
+  const ids: string[] = [];
+  for (const id of PROJECT_GRID_ORDER) {
+    if (!seen.has(id)) {
+      seen.add(id);
+      ids.push(id);
+    }
+  }
+  for (const p of PROJECTS) {
+    if (!seen.has(p.id)) {
+      seen.add(p.id);
+      ids.push(p.id);
+    }
+  }
+  return ids;
+}
+
+export function getAdjacentProjectIds(id: string): {
+  prev: Project | null;
+  next: Project | null;
+} {
+  const order = getProjectRouteOrder();
+  const index = order.indexOf(id);
+  if (index === -1) return { prev: null, next: null };
+  const prevId = index > 0 ? order[index - 1] : null;
+  const nextId = index < order.length - 1 ? order[index + 1] : null;
+  return {
+    prev: prevId ? getProjectById(prevId) ?? null : null,
+    next: nextId ? getProjectById(nextId) ?? null : null,
+  };
+}
+
 export const SKILL_GROUPS = [
   {
     title: "Languages",

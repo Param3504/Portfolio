@@ -2044,6 +2044,32 @@
 }
 
 /* Project detail popup */
+.project-card-link {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+}
+
+.project-card-link:hover {
+  text-decoration: none;
+}
+
+.project-featured-link {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+}
+
+.project-inline-link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.project-inline-link:hover {
+  color: var(--accent);
+  text-decoration: none;
+}
+
 .project-modal-overlay {
   position: fixed;
   inset: 0;

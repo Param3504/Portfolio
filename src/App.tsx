@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { BrowserRouter, Link, Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import {
   ABOUT_TABS,
   EXPERIENCE,
@@ -6,406 +7,20 @@ import {
   PROJECTS,
   PROJECT_GRID_ORDER,
   SKILL_GROUPS,
-  getProjectModalImages,
   type AboutTab,
-  type ArchitectureLayer,
   type Experience,
   type Project,
-  type ProjectScreenshot,
 } from "./data/portfolio";
 import { assetUrl } from "./lib/assetUrl";
+import {
+  ArchitectureTabs,
+  ProjectCardCarousel,
+  ProjectScreenshots,
+  cn,
+} from "./components/project-ui";
+import ProjectPage from "./pages/ProjectPage";
 import "./App.css";
 
-function ProjectScreenshots({ images }: { images: ProjectScreenshot[] }) {
-  const [activeIndex, setActiveIndex] = useState(0);
-  const count = images.length;
-  const active = images[activeIndex] ?? images[0];
-
-  const goPrev = () => setActiveIndex((i) => (i - 1 + count) % count);
-  const goNext = () => setActiveIndex((i) => (i + 1) % count);
-
-  return (
-    <div className="project-screenshots">
-      <div
-        className="project-screenshots-stack"
-        aria-label="Product screenshots"
-      >
-        {images.map((shot) => (
-          <figure key={shot.src} className="project-screenshot-figure">
-            <img src={assetUrl(shot.src)} alt={shot.alt} loading="lazy" />
-            {shot.caption && <figcaption>{shot.caption}</figcaption>}
-          </figure>
-        ))}
-      </div>
-
-      <div
-        className="project-screenshots-carousel"
-        aria-roledescription="carousel"
-      >
-        <div className="project-screenshots-carousel-viewport">
-          <figure className="project-screenshot-figure">
-            <img key={active.src} src={assetUrl(active.src)} alt={active.alt} />
-            {active.caption && <figcaption>{active.caption}</figcaption>}
-          </figure>
-        </div>
-        <div className="project-screenshots-carousel-controls">
-          <button
-            type="button"
-            className="project-screenshots-nav"
-            onClick={goPrev}
-            aria-label="Previous screenshot"
-          >
-            ‹
-          </button>
-          <div
-            className="project-screenshots-dots"
-            role="tablist"
-            aria-label="Screenshot pages"
-          >
-            {images.map((shot, index) => (
-              <button
-                key={shot.src}
-                type="button"
-                role="tab"
-                aria-selected={index === activeIndex}
-                aria-label={shot.caption ?? `Screenshot ${index + 1}`}
-                className={cn(
-                  "project-screenshots-dot",
-                  index === activeIndex && "project-screenshots-dot-active",
-                )}
-                onClick={() => setActiveIndex(index)}
-              />
-            ))}
-          </div>
-          <button
-            type="button"
-            className="project-screenshots-nav"
-            onClick={goNext}
-            aria-label="Next screenshot"
-          >
-            ›
-          </button>
-        </div>
-        <p className="project-screenshots-counter" aria-live="polite">
-          {activeIndex + 1} / {count}
-        </p>
-      </div>
-    </div>
-  );
-}
-
-function ProjectModalCarousel({
-  images,
-  initialIndex = 0,
-  intervalMs = 2500,
-}: {
-  images: ProjectScreenshot[];
-  initialIndex?: number;
-  intervalMs?: number;
-}) {
-  const start = Math.min(Math.max(0, initialIndex), images.length - 1);
-  const [activeIndex, setActiveIndex] = useState(start);
-
-  useEffect(() => {
-    setActiveIndex(start);
-  }, [start, images]);
-
-  const active = images[activeIndex] ?? images[0];
-
-  useEffect(() => {
-    if (images.length <= 1) return;
-    const id = window.setInterval(() => {
-      setActiveIndex((i) => (i + 1) % images.length);
-    }, intervalMs);
-    return () => window.clearInterval(id);
-  }, [images.length, intervalMs]);
-
-  const goPrev = () =>
-    setActiveIndex((i) => (i - 1 + images.length) % images.length);
-  const goNext = () => setActiveIndex((i) => (i + 1) % images.length);
-
-  return (
-    <div className="project-modal-carousel" aria-roledescription="carousel">
-      <div className="project-modal-carousel-viewport">
-        <img key={active.src} src={assetUrl(active.src)} alt={active.alt} />
-        {active.caption && (
-          <p className="project-modal-carousel-caption">{active.caption}</p>
-        )}
-      </div>
-      {images.length > 1 && (
-        <div className="project-modal-carousel-controls">
-          <button
-            type="button"
-            className="project-modal-carousel-nav"
-            onClick={goPrev}
-            aria-label="Previous"
-          >
-            ‹
-          </button>
-          <div className="project-modal-carousel-dots">
-            {images.map((shot, index) => (
-              <button
-                key={shot.src}
-                type="button"
-                aria-label={shot.caption ?? `Slide ${index + 1}`}
-                className={cn(
-                  "project-modal-carousel-dot",
-                  index === activeIndex && "project-modal-carousel-dot-active",
-                )}
-                onClick={() => setActiveIndex(index)}
-              />
-            ))}
-          </div>
-          <button
-            type="button"
-            className="project-modal-carousel-nav"
-            onClick={goNext}
-            aria-label="Next"
-          >
-            ›
-          </button>
-          <span className="project-modal-carousel-counter">
-            {activeIndex + 1} / {images.length}
-          </span>
-        </div>
-      )}
-    </div>
-  );
-}
-
-function ProjectDetailModal({
-  project,
-  onClose,
-}: {
-  project: Project;
-  onClose: () => void;
-}) {
-  const images = getProjectModalImages(project);
-  const description =
-    project.modalDescription ??
-    project.stackSummary ??
-    project.highlights.join(" ");
-
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-    };
-    document.body.style.overflow = "hidden";
-    window.addEventListener("keydown", onKey);
-    return () => {
-      document.body.style.overflow = "";
-      window.removeEventListener("keydown", onKey);
-    };
-  }, [onClose]);
-
-  return (
-    <div
-      className="project-modal-overlay"
-      role="presentation"
-      onClick={onClose}
-    >
-      <div
-        className="project-modal glass"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="project-modal-title"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <button
-          type="button"
-          className="project-modal-close"
-          onClick={onClose}
-          aria-label="Close"
-        >
-          ×
-        </button>
-        <header className="project-modal-header">
-          <p className="project-modal-client">
-            {project.client ?? project.period}
-          </p>
-          <h2 id="project-modal-title">{project.title}</h2>
-          <p className="project-modal-subtitle">{project.subtitle}</p>
-        </header>
-        {images.length > 0 ? (
-          <ProjectModalCarousel
-            images={images}
-            initialIndex={project.screenshotsInitialIndex}
-          />
-        ) : (
-          <div className="project-modal-fallback-media">
-            <img src={assetUrl(project.image)} alt={project.title} />
-          </div>
-        )}
-        <div className="project-modal-body">
-          <p>{description}</p>
-          <div className="project-modal-tags">
-            {project.tags.map((t) => (
-              <span key={t} className="tag">
-                {t}
-              </span>
-            ))}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function ProjectCardCarousel({
-  images,
-  initialIndex = 0,
-  intervalMs = 2000,
-}: {
-  images: ProjectScreenshot[];
-  initialIndex?: number;
-  intervalMs?: number;
-}) {
-  const start = Math.min(Math.max(0, initialIndex), images.length - 1);
-  const [activeIndex, setActiveIndex] = useState(start);
-  const active = images[activeIndex] ?? images[0];
-
-  useEffect(() => {
-    if (images.length <= 1) return;
-    const id = window.setInterval(() => {
-      setActiveIndex((i) => (i + 1) % images.length);
-    }, intervalMs);
-    return () => window.clearInterval(id);
-  }, [images.length, intervalMs]);
-
-  return (
-    <div
-      className="project-card-carousel"
-      aria-roledescription="carousel"
-      aria-live="polite"
-    >
-      <img
-        key={active.src}
-        src={assetUrl(active.src)}
-        alt={active.alt}
-        loading="lazy"
-      />
-      <div className="project-card-carousel-dots" aria-hidden>
-        {images.map((shot, index) => (
-          <span
-            key={shot.src}
-            className={cn(
-              "project-card-carousel-dot",
-              index === activeIndex && "project-card-carousel-dot-active",
-            )}
-          />
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function ArchitectureTabs({ layers }: { layers: ArchitectureLayer[] }) {
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [ribbonOpen, setRibbonOpen] = useState(false);
-  const [ribbonBounceStopped, setRibbonBounceStopped] = useState<
-    Record<number, boolean>
-  >({});
-  const active = layers[activeIndex] ?? layers[0];
-  const hasPanelImage = Boolean(active.panelImage);
-  const showRibbonBounce =
-    hasPanelImage && !ribbonOpen && !ribbonBounceStopped[activeIndex];
-
-  useEffect(() => {
-    setRibbonOpen(false);
-  }, [activeIndex]);
-
-  const handleRibbonClick = () => {
-    setRibbonBounceStopped((prev) => ({ ...prev, [activeIndex]: true }));
-    setRibbonOpen((open) => !open);
-  };
-
-  return (
-    <div className="architecture-layers">
-      <h4 className="architecture-heading">Three-layer architecture</h4>
-      <p className="architecture-subtitle">
-        (configuration → optimise → simulate)
-      </p>
-      <div
-        className="architecture-tabs"
-        role="tablist"
-        aria-label="Three-layer architecture"
-      >
-        {layers.map((layer, index) => {
-          const isActive = index === activeIndex;
-          return (
-            <button
-              key={layer.tabLabel}
-              type="button"
-              role="tab"
-              aria-selected={isActive}
-              className={cn(
-                "architecture-tab",
-                isActive && "architecture-tab-active",
-              )}
-              onClick={() => setActiveIndex(index)}
-            >
-              {layer.tabLabel}
-            </button>
-          );
-        })}
-      </div>
-      <div
-        className={cn(
-          "architecture-panel",
-          hasPanelImage && "architecture-panel-has-ribbon",
-        )}
-        role="tabpanel"
-      >
-        <div className="architecture-panel-layout">
-          <div className="architecture-panel-copy">
-            <h5 className="architecture-panel-title">{active.title}</h5>
-            <p>{active.description}</p>
-          </div>
-
-          {hasPanelImage && (
-            <div
-              className={cn(
-                "architecture-panel-ribbon",
-                ribbonOpen && "architecture-panel-ribbon-open",
-              )}
-            >
-              <div
-                className="architecture-panel-ribbon-drawer"
-                aria-hidden={!ribbonOpen}
-              >
-                <img
-                  src={assetUrl(active.panelImage!)}
-                  alt={active.panelImageAlt ?? active.title}
-                  loading="lazy"
-                />
-              </div>
-              <button
-                type="button"
-                className={cn(
-                  "architecture-panel-ribbon-handle",
-                  showRibbonBounce && "architecture-panel-ribbon-handle-bounce",
-                )}
-                onClick={handleRibbonClick}
-                aria-label={
-                  ribbonOpen ? "Hide UI screenshot" : "Show UI screenshot"
-                }
-                aria-expanded={ribbonOpen}
-              >
-                <span className="architecture-panel-ribbon-chevron" aria-hidden>
-                  {ribbonOpen ? "›" : "‹"}
-                </span>
-              </button>
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function cn(...classes: (string | false | undefined)[]) {
-  return classes.filter(Boolean).join(" ");
-}
 
 function SkillGroupIcon({ title }: { title: string }) {
   const lower = title.toLowerCase();
@@ -931,15 +546,35 @@ function ContactLinkIcon({ icon }: { icon: string }) {
 }
 
 export default function App() {
+  const basename = import.meta.env.BASE_URL.replace(/\/$/, "") || undefined;
+  return (
+    <BrowserRouter basename={basename}>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/projects/:projectId" element={<ProjectPage />} />
+      </Routes>
+    </BrowserRouter>
+  );
+}
+
+function HomePage() {
+  const location = useLocation();
+  const navigate = useNavigate();
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState<(typeof NAV)[number]["id"]>(
     NAV[0].id,
   );
-  const [modalProject, setModalProject] = useState<Project | null>(null);
   const [projectFilter, setProjectFilter] = useState<
     "all" | "gen-ai" | "chatbot"
   >("all");
+
+  useEffect(() => {
+    const scrollTo = (location.state as { scrollTo?: string } | null)?.scrollTo;
+    if (!scrollTo) return;
+    requestAnimationFrame(() => scrollToSection(scrollTo));
+    navigate(".", { replace: true, state: {} });
+  }, [location, navigate]);
 
   useEffect(() => {
     const headerOffset = NAV_SCROLL_OFFSET;
@@ -1374,43 +1009,27 @@ export default function App() {
 
             {featured && (
               <article className="glass project-featured">
-                <div
+                <Link
+                  to={`/projects/${featured.id}`}
                   className={cn(
-                    "project-featured-media",
-                    featured.modalDescription && "project-card-clickable",
+                    "project-featured-media project-card-clickable",
+                    "project-featured-link",
                   )}
-                  onClick={
-                    featured.modalDescription
-                      ? () => setModalProject(featured)
-                      : undefined
-                  }
-                  onKeyDown={
-                    featured.modalDescription
-                      ? (e) => {
-                          if (e.key === "Enter" || e.key === " ") {
-                            e.preventDefault();
-                            setModalProject(featured);
-                          }
-                        }
-                      : undefined
-                  }
-                  role={featured.modalDescription ? "button" : undefined}
-                  tabIndex={featured.modalDescription ? 0 : undefined}
-                  aria-label={
-                    featured.modalDescription
-                      ? `Open ${featured.title} gallery`
-                      : undefined
-                  }
+                  aria-label={`View ${featured.title} project`}
                 >
                   {featured.screenshots && featured.screenshots.length > 0 ? (
                     <ProjectScreenshots images={featured.screenshots} />
                   ) : (
                     <img src={assetUrl(featured.image)} alt={featured.title} />
                   )}
-                </div>
+                </Link>
                 <div className="project-featured-body">
                   <p className="project-client">{featured.client}</p>
-                  <h3>{featured.title}</h3>
+                  <h3>
+                    <Link to={`/projects/${featured.id}`} className="project-inline-link">
+                      {featured.title}
+                    </Link>
+                  </h3>
                   <p className="project-subtitle">{featured.subtitle}</p>
                   <div className="project-tags">
                     {featured.tags.map((t) => (
@@ -1465,18 +1084,10 @@ export default function App() {
 
             <div className="project-grid">
               {filteredGridProjects.map((project) => (
-                <article
+                <Link
                   key={project.id}
-                  className="glass project-card project-card-clickable"
-                  onClick={() => setModalProject(project)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" || e.key === " ") {
-                      e.preventDefault();
-                      setModalProject(project);
-                    }
-                  }}
-                  role="button"
-                  tabIndex={0}
+                  to={`/projects/${project.id}`}
+                  className="glass project-card project-card-clickable project-card-link"
                 >
                   <div className="project-card-media">
                     {project.cardScreenshots?.length ||
@@ -1507,7 +1118,7 @@ export default function App() {
                       ))}
                     </div>
                   </div>
-                </article>
+                </Link>
               ))}
             </div>
           </div>
@@ -1593,13 +1204,6 @@ export default function App() {
           </p>
         </section>
       </main>
-
-      {modalProject && (
-        <ProjectDetailModal
-          project={modalProject}
-          onClose={() => setModalProject(null)}
-        />
-      )}
     </>
   );
 }

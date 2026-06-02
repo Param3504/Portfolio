@@ -1,0 +1,164 @@
+%-------------------------
+% Resume in LaTeX — Param Prajapati
+% Based on: https://github.com/sb2nov/resume (MIT)
+%------------------------
+
+\documentclass[letterpaper,11pt]{article}
+
+\usepackage{latexsym}
+\usepackage[empty]{fullpage}
+\usepackage{titlesec}
+\usepackage{marvosym}
+\usepackage[usenames,dvipsnames]{color}
+\usepackage{verbatim}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\usepackage{fancyhdr}
+\usepackage[english]{babel}
+\usepackage{tabularx}
+\usepackage{fontawesome5}
+\usepackage{multicol}
+\setlength{\multicolsep}{-3.0pt}
+\setlength{\columnsep}{-1pt}
+\input{glyphtounicode}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyfoot{}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+
+\addtolength{\oddsidemargin}{-0.6in}
+\addtolength{\evensidemargin}{-0.5in}
+\addtolength{\textwidth}{1.19in}
+\addtolength{\topmargin}{-.7in}
+\addtolength{\textheight}{1.4in}
+
+\urlstyle{same}
+\raggedbottom
+\raggedright
+\setlength{\tabcolsep}{0in}
+
+\titleformat{\section}{
+  \vspace{-4pt}\scshape\raggedright\large\bfseries
+}{}{0em}{}[\color{black}\titlerule \vspace{-5pt}]
+
+\pdfgentounicode=1
+
+\newcommand{\resumeItem}[1]{
+  \item\small{
+    {#1 \vspace{-2pt}}
+  }
+}
+
+\newcommand{\resumeSubheading}[4]{
+  \vspace{-2pt}\item
+    \begin{tabular*}{1.0\textwidth}[t]{l@{\extracolsep{\fill}}r}
+      \textbf{#1} & \textbf{\small #2} \\
+      \textit{\small#3} & \textit{\small #4} \\
+    \end{tabular*}\vspace{-7pt}
+}
+
+\newcommand{\resumeProjectHeading}[2]{
+    \item
+    \begin{tabular*}{1.001\textwidth}{l@{\extracolsep{\fill}}r}
+      \small#1 & \textbf{\small #2}\\
+    \end{tabular*}\vspace{-7pt}
+}
+
+\renewcommand\labelitemi{$\vcenter{\hbox{\tiny$\bullet$}}$}
+\renewcommand\labelitemii{$\vcenter{\hbox{\tiny$\bullet$}}$}
+
+\newcommand{\resumeSubHeadingListStart}{\begin{itemize}[leftmargin=0.0in, label={}]}
+\newcommand{\resumeSubHeadingListEnd}{\end{itemize}}
+\newcommand{\resumeItemListStart}{\begin{itemize}}
+\newcommand{\resumeItemListEnd}{\end{itemize}\vspace{-5pt}}
+
+\begin{document}
+
+%----------HEADING----------
+\begin{center}
+    {\Huge \scshape Param Prajapati} \\ \vspace{4pt}
+    \small Bengaluru, India ~ $\|$ ~
+    \href{mailto:paramprajapati7570@gmail.com}{\raisebox{-0.2\height}\faEnvelope\ \underline{paramprajapati7570@gmail.com}} ~ $\|$ ~
+    \href{tel:+916351285937}{\raisebox{-0.2\height}\faPhone\ \underline{+91 6351285937}} \\ \vspace{2pt}
+    \href{https://www.linkedin.com/in/param-prajapati-714424267/}{\raisebox{-0.2\height}\faLinkedin\ \underline{linkedin.com/in/param-prajapati-714424267}} ~
+    \href{https://github.com/Param3504}{\raisebox{-0.2\height}\faGithub\ \underline{github.com/Param3504}} ~
+    \href{https://param3504.github.io/Portfolio/}{\raisebox{-0.2\height}\faGlobe\ \underline{param3504.github.io/Portfolio}}
+    \vspace{-8pt}
+\end{center}
+
+%-----------EDUCATION-----------
+\section{Education}
+  \resumeSubHeadingListStart
+    \resumeSubheading
+      {Indian Institute of Information Technology (IIIT) Vadodara -- ICD}{Dec 2021 -- Aug 2025}
+      {Bachelor of Technology in Computer Science \& Engineering}{CGPA: 8.00}
+  \resumeSubHeadingListEnd
+
+%-----------EXPERIENCE-----------
+\section{Experience}
+  \resumeSubHeadingListStart
+
+    \resumeSubheading
+      {Sigmoid}{Jan 2025 -- Present}
+      {Associate SDE (Jul 2025 -- Present) $|$ Software Engineer Intern (Jan -- Jun 2025)}{Bengaluru, India}
+      \resumeItemListStart
+        \resumeItem{Shipped \textbf{10+ enterprise products} for Pfizer, Reckitt, Kenvue, Compass, and MD Johnson on Agile CI/CD; built shared React/TypeScript component libraries that cut feature delivery time \textbf{$\sim$40\%} across teams.}
+        \resumeItem{Architected \textbf{Trade Promo Optimiser} (Kenvue RGM): 3-layer platform---customer config $\rightarrow$ DS optimisation $\rightarrow$ scenario simulation---with React/TS UI on \textbf{6 FastAPI microservices}; promo calendar, scenario compare, K-ROI reports, and business rulebook.}
+        \resumeItem{Built \textbf{Atlas Companion} (Reckitt): production GenAI assistant with WebSockets, token-level streaming, and multimodal outputs (SQL, bar/line charts, tables, FAQs) delivered in \textbf{72 hours}; architecture reused across 5+ client chatbot programs.}
+        \resumeItem{Delivered \textbf{Data Product Marketplace}: RBAC onboarding wizard, Snowflake--Databricks lineage mapping, bronze$\rightarrow$silver$\rightarrow$gold report graphs, and coverage sufficiency drill-downs for Kenvue data stewards.}
+        \resumeItem{Owned \textbf{6 GenAI chatbots} end-to-end---Pfizer HCP portal (RBAC, voice notes, call summaries), Compass Data Companion (polling + browser streaming), Kenvue CEO dashboard (Power BI SDK filter sync to LLM context), MD Johnson Markdown assistant.}
+        \resumeItem{Built \textbf{Canteen CITE} (Compass): unified analytics with $\sim$\textbf{90 KPI charts} across sales, product hub, catalog, and service SLA dashboards; drill-down exports for LOB, location, and category views.}
+        \resumeItem{Engineered \textbf{Smart Targets} backend (Reckitt): staged approval workflows, Azure Logic Apps email triggers on approver actions, and zero-loss ETL of \textbf{100-column Excel} target sheets into structured tables.}
+      \resumeItemListEnd
+
+    \resumeSubheading
+      {Mercor}{2025 -- Present}
+      {AI Model Evaluator (Contract)}{Remote}
+      \resumeItemListStart
+        \resumeItem{Pre-release evaluation of \textbf{Claude Octopus} across \textbf{10+ Git repositories}---stress-testing code generation, tool use, safety, and real-world coding tasks before launch.}
+      \resumeItemListEnd
+
+    \resumeSubheading
+      {Techplement}{Jun 2024 -- Jul 2024}
+      {Full Stack Intern}{Remote}
+      \resumeItemListStart
+        \resumeItem{Built Social Media Dashboard integrating Facebook, Instagram, YouTube, and Spotify APIs with React/Tailwind front end and Node.js/MongoDB backend for secure credential storage and live analytics.}
+      \resumeItemListEnd
+
+  \resumeSubHeadingListEnd
+\vspace{-10pt}
+
+%-----------PROJECTS-----------
+\section{Selected Projects}
+    \vspace{-10pt}
+    \resumeSubHeadingListStart
+
+      \resumeProjectHeading
+          {\textbf{Crime Prediction \& Forecasting} $|$ \emph{Python, PyTorch, XGBoost, LSTM, Prophet}}{2024}
+          \resumeItemListStart
+            \resumeItem{Led team of 5 on IEEE paper-based crime prediction; ensemble ML (RF, XGBoost, AdaBoost, KNN) reached \textbf{93\% accuracy}; LSTM/RNN/Prophet forecasting with multi-jurisdiction preprocessing pipeline.}
+          \resumeItemListEnd
+
+      \resumeProjectHeading
+          {\textbf{Employee Tracking System} $|$ \emph{Node.js, Express, MongoDB, Socket.io, Leaflet.js}}{2024}
+          \resumeItemListStart
+            \resumeItem{Real-time MERN employee tracking with Leaflet maps, Socket.io live broadcasts, and RBAC for admin/employee roles.}
+          \resumeItemListEnd
+
+    \resumeSubHeadingListEnd
+\vspace{-10pt}
+
+%-----------SKILLS-----------
+\section{Technical Skills}
+ \begin{tabularx}{\linewidth}{@{}l X@{}}
+    \small\textbf{Languages} & \small{C, C++, JavaScript, TypeScript, Python, SQL} \\
+    \small\textbf{Frontend} & \small{React, Next.js, Tailwind CSS, MUI, Recharts, Plotly, AG Grid, Redux Toolkit, Framer Motion} \\
+    \small\textbf{Backend \& Data} & \small{Node.js, Express, NestJS, FastAPI, PostgreSQL, MySQL, MongoDB, Prisma, Redis, WebSockets, SSE, RBAC} \\
+    \small\textbf{AI / GenAI} & \small{LLM Inferencing, Prompt Engineering, RAG, Tool Calling, Streaming UX, PyTorch, TensorFlow, Transformers} \\
+    \small\textbf{Cloud \& DevOps} & \small{Azure (Logic Apps, AI Services), Docker, CI/CD, GitHub Actions, Power BI SDK, REST APIs, Git} \\
+ \end{tabularx}
+ \vspace{-14pt}
+
+\end{document}
