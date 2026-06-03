@@ -23,6 +23,7 @@
 
 html {
   scroll-behavior: smooth;
+  scroll-padding-top: 4.5rem;
 }
 
 body {
@@ -58,8 +59,8 @@ img {
 }
 
 .section {
-  padding: 5rem 0;
-  scroll-margin-top: 5.5rem;
+  padding: 1.5rem 0 5rem;
+  scroll-margin-top: 4.5rem;
 }
 
 .section-label {

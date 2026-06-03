@@ -357,14 +357,57 @@ const NAV = [
   { id: "contact", label: "Contact", icon: "contact" },
 ] as const;
 
-const NAV_SCROLL_OFFSET = 88;
+const NAV_SCROLL_OFFSET = 72;
 
-function scrollToSection(id: string) {
+let scrollLockSection: (typeof NAV)[number]["id"] | null = null;
+
+function scrollToSection(id: (typeof NAV)[number]["id"]) {
   const el = document.getElementById(id);
   if (!el) return;
-  const top =
-    el.getBoundingClientRect().top + window.scrollY - NAV_SCROLL_OFFSET;
-  window.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
+  scrollLockSection = id;
+
+  const maxScroll = Math.max(
+    0,
+    document.documentElement.scrollHeight - window.innerHeight,
+  );
+  const target = Math.max(0, el.offsetTop - NAV_SCROLL_OFFSET);
+  const top = Math.min(target, maxScroll);
+
+  window.scrollTo({ top, behavior: "smooth" });
+}
+
+function getActiveSectionFromScroll(): (typeof NAV)[number]["id"] {
+  const scrollY = window.scrollY;
+  const anchor = scrollY + NAV_SCROLL_OFFSET + 8;
+  const maxScroll = Math.max(
+    0,
+    document.documentElement.scrollHeight - window.innerHeight,
+  );
+
+  for (const { id } of NAV) {
+    const el = document.getElementById(id);
+    if (!el) continue;
+    const top = el.offsetTop;
+    const bottom = top + el.offsetHeight;
+    if (anchor >= top && anchor < bottom) {
+      return id;
+    }
+  }
+
+  if (scrollY >= maxScroll - 8) {
+    return "contact";
+  }
+
+  for (let i = NAV.length - 1; i >= 0; i--) {
+    const { id } = NAV[i];
+    const el = document.getElementById(id);
+    if (!el) continue;
+    if (anchor >= el.offsetTop) {
+      return id;
+    }
+  }
+
+  return NAV[0].id;
 }
 
 function NavDrawerIcon({ icon }: { icon: (typeof NAV)[number]["icon"] }) {
@@ -572,43 +615,37 @@ function HomePage() {
   useEffect(() => {
     const scrollTo = (location.state as { scrollTo?: string } | null)?.scrollTo;
     if (!scrollTo) return;
-    requestAnimationFrame(() => scrollToSection(scrollTo));
+    const sectionId = NAV.find((item) => item.id === scrollTo)?.id ?? NAV[0].id;
+    setActiveSection(sectionId);
+    scrollLockSection = sectionId;
+    requestAnimationFrame(() => scrollToSection(sectionId));
     navigate(".", { replace: true, state: {} });
   }, [location, navigate]);
 
   useEffect(() => {
-    const headerOffset = NAV_SCROLL_OFFSET;
-
     const updateFromScroll = () => {
       setScrolled(window.scrollY > 24);
-
-      const scrollY = window.scrollY;
-      const viewportBottom = scrollY + window.innerHeight;
-      const docHeight = document.documentElement.scrollHeight;
-
-      if (viewportBottom >= docHeight - 100) {
-        setActiveSection("contact");
+      if (scrollLockSection) {
+        setActiveSection(scrollLockSection);
         return;
       }
+      setActiveSection(getActiveSectionFromScroll());
+    };
 
-      let current: (typeof NAV)[number]["id"] = NAV[0].id;
-      for (const { id } of NAV) {
-        const el = document.getElementById(id);
-        if (!el) continue;
-        const top = el.getBoundingClientRect().top + scrollY;
-        if (scrollY + headerOffset >= top) {
-          current = id;
-        }
-      }
-      setActiveSection(current);
+    const releaseScrollLock = () => {
+      if (!scrollLockSection) return;
+      scrollLockSection = null;
+      setActiveSection(getActiveSectionFromScroll());
     };
 
     updateFromScroll();
     window.addEventListener("scroll", updateFromScroll, { passive: true });
     window.addEventListener("resize", updateFromScroll);
+    window.addEventListener("scrollend", releaseScrollLock, { passive: true });
     return () => {
       window.removeEventListener("scroll", updateFromScroll);
       window.removeEventListener("resize", updateFromScroll);
+      window.removeEventListener("scrollend", releaseScrollLock);
     };
   }, []);
 
@@ -663,6 +700,7 @@ function HomePage() {
             onClick={(e) => {
               e.preventDefault();
               setMobileMenuOpen(false);
+              setActiveSection("home");
               scrollToSection("home");
             }}
           >
@@ -675,6 +713,12 @@ function HomePage() {
                 href={`#${item.id}`}
                 className={cn(activeSection === item.id && "nav-link-active")}
                 aria-current={activeSection === item.id ? "page" : undefined}
+                onClick={(e) => {
+                  e.preventDefault();
+                  setMobileMenuOpen(false);
+                  setActiveSection(item.id);
+                  scrollToSection(item.id);
+                }}
               >
                 {item.label}
               </a>
@@ -687,6 +731,7 @@ function HomePage() {
               onClick={(e) => {
                 e.preventDefault();
                 setMobileMenuOpen(false);
+                setActiveSection("contact");
                 scrollToSection("contact");
               }}
             >
@@ -744,6 +789,7 @@ function HomePage() {
               onClick={(e) => {
                 e.preventDefault();
                 setMobileMenuOpen(false);
+                setActiveSection("home");
                 scrollToSection("home");
               }}
             >
@@ -780,6 +826,7 @@ function HomePage() {
                   onClick={(e) => {
                     e.preventDefault();
                     setMobileMenuOpen(false);
+                    setActiveSection(item.id);
                     requestAnimationFrame(() => scrollToSection(item.id));
                   }}
                 >
@@ -817,6 +864,7 @@ function HomePage() {
               className="btn btn-primary nav-drawer-cta-btn"
               onClick={() => {
                 setMobileMenuOpen(false);
+                setActiveSection("contact");
                 requestAnimationFrame(() => scrollToSection("contact"));
               }}
             >

@@ -546,8 +546,8 @@
 }
 
 .hero {
-  padding-top: 7rem;
-  scroll-margin-top: 5.5rem;
+  padding-top: 5.5rem;
+  scroll-margin-top: 4.5rem;
   min-height: 92vh;
   display: flex;
   align-items: center;
@@ -1734,7 +1734,9 @@
 }
 
 .contact-section {
+  padding-top: 0.5rem;
   padding-bottom: 4rem;
+  min-height: calc(100dvh - 4.5rem);
 }
 
 .contact-layout {
