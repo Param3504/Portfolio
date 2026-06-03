@@ -85,7 +85,7 @@ export const PROFILE = {
   linkedin: "https://www.linkedin.com/in/param-prajapati-714424267/",
   resume: {
     file: "Param-Prajapati-Resume.pdf",
-    downloadName: "Param-Prajapati-Resume.pdf",
+    downloadName: "Param_Resume.pdf",
   },
   location: "Bengaluru, India",
   education: {
